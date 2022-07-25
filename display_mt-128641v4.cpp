@@ -1,51 +1,6 @@
 
 #include "display_mt-128641v4.h"
 
-/* itoa:  convert int n to char array s */
-void itoa(int n, char s[])
-{
-	int i, sign;
-
-	if ((sign = n) < 0)
-		n = -n;
-	i = 0;
-	do
-	{
-		s[i++] = n % 10 + '0';
-	} while ((n /= 10) > 0);
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
-	reverse(s);
-}
-
-/* reverse symbols in char array*/
-void reverse(char s[])
-{
-	int i, j;
-	char c;
-
-	for (i = 0, j = strlen(s) - 1; i < j; i++, j--)
-	{
-		c = s[i];
-		s[i] = s[j];
-		s[j] = c;
-	}
-}
-
-void reverse(char s[], char ssize)
-{
-	int i, j;
-	char c;
-
-	for (i = 0, j = ssize - 1; i < j; i++, j--)
-	{
-		c = s[i];
-		s[i] = s[j];
-		s[j] = c;
-	}
-}
-
 void simpleDelay(unsigned int delayTime)
 {
 	unsigned int i; // very important value :-)
@@ -139,27 +94,19 @@ void DisplayPrintInt(const char lineNumber, const char offset, const char interv
 	DisplayPrintLine(lineNumber, offset, interval, strPtr);
 }
 
+void DisplayPrintHexU16(const char lineNumber, const char offset, const char interval, const unsigned int number)
+{
+	char newHex[5];
+	char *strPtr = newHex;
+	u16toHexString(number, strPtr);
+	DisplayPrintLine(lineNumber, offset, interval, strPtr);
+}
+
 void DisplayPrintHexU32(const char lineNumber, const char offset, const char interval, const unsigned int number)
 {
 	char newHex[10];
 	char *strPtr = newHex;
-	unsigned int a = 0xF;
-	unsigned char b = 0;
-
-	for (unsigned char i = 0; i < 8; i++)
-	{
-		char temp = ((number & a) >> b);
-		char symb = (temp < 10) ? temp + 48 : temp + 55;
-		strPtr[i] = symb;
-		a *= 0x10;
-		b += 4;
-	}
-	strPtr[8] = 'x';
-	strPtr[9] = '0';
-	strPtr[10] = '\0';
-
-	reverse(strPtr, 10);
-
+	u32toHexString(number, strPtr);
 	DisplayPrintLine(lineNumber, offset, interval, strPtr);
 }
 
