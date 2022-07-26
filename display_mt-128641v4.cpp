@@ -1,6 +1,7 @@
 
 #include "display_mt-128641v4.h"
 
+
 void simpleDelay(unsigned int delayTime)
 {
 	unsigned int i; // very important value :-)
@@ -64,7 +65,7 @@ void DisplaySetPosition(const char &page, const char &address)
 void DisplayWriteSymbol(unsigned char symbol)
 {
 	unsigned char font_index = (symbol > 0x20) ? (symbol - 0x20) : 0x20;
-	for (unsigned char i = 0; i < 8; i++)
+	for (unsigned char i = 0; i < 7; i++)
 	{
 		DisplaySend(Font_OCR_A[font_index * 7 + i]);
 	}
@@ -94,19 +95,27 @@ void DisplayPrintInt(const char lineNumber, const char offset, const char interv
 	DisplayPrintLine(lineNumber, offset, interval, strPtr);
 }
 
-void DisplayPrintHexU16(const char lineNumber, const char offset, const char interval, const unsigned int number)
+void DisplayPrintDouble(const char lineNumber, const char offset, const char interval, const char tolerance, double number)
 {
+	char newString[11];
+	char *strPtr = newString;
+	DoubleToStr(number, tolerance ,strPtr);
+	DisplayPrintLine(lineNumber, offset, interval, strPtr);
+}
+
+
+void DisplayPrintHexU16(const char lineNumber, const char offset, const char interval, const unsigned int number){
 	char newHex[5];
 	char *strPtr = newHex;
-	u16toHexString(number, strPtr);
-	DisplayPrintLine(lineNumber, offset, interval, strPtr);
+	u16toHexStr (number, strPtr);
+	DisplayPrintLine(lineNumber, offset, interval, strPtr);	
 }
 
 void DisplayPrintHexU32(const char lineNumber, const char offset, const char interval, const unsigned int number)
 {
 	char newHex[10];
 	char *strPtr = newHex;
-	u32toHexString(number, strPtr);
+	u32toHexStr (number, strPtr);
 	DisplayPrintLine(lineNumber, offset, interval, strPtr);
 }
 
