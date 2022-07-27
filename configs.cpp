@@ -6,6 +6,21 @@ void SysTickConfig(void)
 	SysTick->CTRL = 0x06;
 }
 
+void Timer2Config(void)
+{
+	MDR_RST_CLK->PER_CLOCK |= (1 << 15); // clock turn on: Timer2
+	// MDR_RST_CLK->TIM_CLOCK |= 0x500; 		// TIM2 BRG 0x5 -> TIM2_CLK == HCLK/32
+	MDR_RST_CLK->TIM_CLOCK |= (1 << 25); // TIM2_CLK Enabled, TIM2_CLK == HCLK
+
+	MDR_TIMER2->CNTRL = 0x0; // Timer2 initizlization
+	MDR_TIMER2->CNT = 0x1;	 // initial value of timer counter
+	MDR_TIMER2->PSG = 65000; // Timer2 Prescaller
+	MDR_TIMER2->ARR = 250;	 // Timer2 AutoReload Period
+
+	MDR_TIMER2->IE = 0x2; // Timer2 Interrup Enable
+	NVIC_EnableIRQ(Timer2_IRQn);
+}
+
 void Dac2Config(void)
 {
 	MDR_RST_CLK->PER_CLOCK |= (1 << 18); // clock turn on: DAC
@@ -15,10 +30,14 @@ void Dac2Config(void)
 
 void Adc2Config(void)
 {
-	MDR_RST_CLK->PER_CLOCK |= (1 << 18);  // clock turn on: DAC
+	MDR_RST_CLK->PER_CLOCK |= (1 << 17);  // clock turn on: ADC
 	MDR_RST_CLK->ADC_MCO_CLOCK |= 0x2020; // ADC clock enable, ADC_CLK = CPU_C1;
+	MDR_ADC->ADC1_CFG = 0xCE01F1;		  // ADC1 Config -> input chanel 31 (temp sensor) , ADC ON
+	MDR_ADC->ADC2_CFG = 0x71;			  // ADC2 Config -> input chanel 7 , ADC ON
+	MDR_ADC->ADC1_CHSEL = 0xFF;
 
-	MDR_ADC->ADC2_CFG = 0x71; // ADC2 Config -> input chanel 7 , ADC ON
+	MDR_ADC->ADC2_CFG |= 0x02;
+	MDR_ADC->ADC1_CFG |= 0x02;
 }
 
 void SSP2Config(void)
@@ -79,6 +98,7 @@ void PeriphConfig(void)
 	Dac2Config();
 	Adc2Config();
 	SSP2Config();
+	Timer2Config();
 }
 
 void CPUClockConfig(void)
