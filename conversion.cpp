@@ -46,7 +46,7 @@ void reverse(char s[], char ssize)
 	}
 }
 
-void u16toHexString (unsigned int n, char s[]){
+void u16toHexStr (unsigned int n, char s[]){
 
 unsigned int a = 0xF;
 unsigned char b = 0;
@@ -67,7 +67,7 @@ unsigned char b = 0;
 
 }
 
-void u32toHexString (unsigned int n, char s[]){
+void u32toHexStr (unsigned int n, char s[]){
 	
 unsigned int a = 0xF;
 	unsigned char b = 0;
@@ -86,4 +86,42 @@ unsigned int a = 0xF;
 
 	reverse(s, 10);
 
+}
+
+/* convert double to array s with tolerance (основано на https://prog-cpp.ru/double-to-str/) */
+void DoubleToStr (double n, int tolerance, char str[]){
+  char s[40], t ;
+  double num;
+  int i, j;
+  i = tolerance;
+  j = 0;
+  num = n;
+  if (num<0) // определяем знак числа
+  {
+    num = -num;
+    s[j] = '-';
+    j++;
+  }
+  do { // преобразуем к нормированной форме (если не меньше 1)
+    num = num / 10;
+    i++;
+  } while ((int)num > 0);
+  num = num * 10;
+  while (i > 0)
+  {
+    t = (int)num; // выделяем цифру, соответствующую целой части
+    s[j] = t | 0x30;
+    i--; j++;
+    if (i == tolerance) { // определяем положение десятичного разделителя
+      s[j] = '.';
+      j++;
+    }
+    num = num - (double)t; // вычитаем из числа целую часть
+    num = num * 10; // переходим к следующему разряду
+  }
+  s[j] = '\0';
+  j++;
+	
+  for (i = 0; i<j; i++) // формируем итоговую строку
+    str[i] = s[i];
 }
